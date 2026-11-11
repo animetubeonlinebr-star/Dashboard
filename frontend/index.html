@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global DevOps Status Board</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b121c'/%3E%3Cpath d='M16 6l9 5.2v9.6L16 26l-9-5.2v-9.6z' fill='none' stroke='%234aa8e0' stroke-width='2'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand">
+        <span class="brand-mark">◈</span>
+        <span class="brand-name">Dashboards</span>
+      </div>
+
+      <nav class="main-nav" id="mainNav" aria-label="Navegação principal">
+        <button class="nav-item is-active" data-view="infrastructure" type="button"><span class="nav-ico">▦</span>Infrastructure</button>
+        <button class="nav-item" data-view="applications" type="button"><span class="nav-ico">▤</span>Applications</button>
+        <button class="nav-item" data-view="logs" type="button"><span class="nav-ico">▥</span>Logs</button>
+        <button class="nav-item" data-view="settings" type="button"><span class="nav-ico">⚙</span>Settings</button>
+      </nav>
+
+      <div class="header-actions">
+        <label class="global-search" for="globalSearch">
+          <span class="ico">⌕</span>
+          <input id="globalSearch" type="search" placeholder="Global Search" autocomplete="off" />
+        </label>
+        <button class="user-menu" id="userMenu" type="button" aria-haspopup="true">
+          <span class="avatar">U</span><span class="user-name">User</span><span class="caret">▾</span>
+        </button>
+        <button class="icon-btn theme-toggle" id="themeToggle" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <span class="theme-ico">☾</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="header-sub">
+      <h1 class="page-title">Global DevOps Status Board</h1>
+      <div class="header-sub-right">
+        <span class="conn-state" id="connState" data-state="connecting">Conectando…</span>
+        <button class="live-pill" id="livePill" type="button" title="Pausar/retomar o streaming de dados">
+          <span class="dot"></span><span class="live-text">Live Data</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard" id="dashboard">
+
+    <!-- ============ COLUNA ESQUERDA ============ -->
+    <section class="col col-left">
+
+      <article class="panel" data-panel-id="servers" data-panel-title="Infrastructure Overview">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <div>
+              <h2 class="panel-title">INFRASTRUCTURE OVERVIEW</h2>
+              <p class="panel-subtitle">Detailed view and status of all servers/services</p>
+            </div>
+          </div>
+        </header>
+        <div class="panel-toolbar">
+          <span class="toolbar-label">Filtered by:</span>
+          <div class="pill-group" id="statusFilters">
+            <button class="pill is-active" data-filter="online" type="button"><span class="status-dot online"></span>Online</button>
+            <button class="pill" data-filter="error" type="button"><span class="status-dot error"></span>Error &amp; Warning</button>
+            <button class="pill" data-filter="offline" type="button"><span class="status-dot offline"></span>Offline</button>
+          </div>
+          <label class="search-box" for="serverSearch">
+            <span class="ico">⌕</span>
+            <input id="serverSearch" type="search" placeholder="Search by tag/name" autocomplete="off" />
+          </label>
+        </div>
+        <div class="server-grid" id="serverGrid" aria-live="polite"></div>
+      </article>
+
+      <article class="panel" data-panel-id="servers-compact" data-panel-title="Infrastructure Overview (nodes)">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <div><h2 class="panel-title">INFRASTRUCTURE OVERVIEW</h2></div>
+          </div>
+        </header>
+        <div class="server-grid is-compact" id="serverGridCompact"></div>
+      </article>
+
+    </section>
+
+    <!-- ============ COLUNA CENTRAL ============ -->
+    <section class="col col-mid">
+
+      <article class="panel" data-panel-id="performance" data-panel-title="System Performance Metrics">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <h2 class="panel-title">SYSTEM PERFORMANCE METRICS</h2>
+          </div>
+        </header>
+        <div class="chart-block">
+          <div class="chart-head">
+            <h3 class="chart-title">CPU Usage (by Cluster)</h3>
+            <div class="legend" id="cpuLegend"></div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="cpuChart"></canvas></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head">
+            <h3 class="chart-title">Memory Allocation</h3>
+            <div class="legend" id="memLegend"></div>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="memChart"></canvas></div>
+        </div>
+      </article>
+
+      <div class="row-2">
+        <article class="panel" data-panel-id="latency" data-panel-title="Service Latency">
+          <header class="panel-head">
+            <div class="panel-title-wrap">
+              <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+              <h2 class="panel-title">SERVICE LATENCY (API GATEWAY)</h2>
+            </div>
+          </header>
+          <div class="chart-head">
+            <span class="legend-label">Last hour</span>
+            <div class="legend" id="latencyLegend"></div>
+          </div>
+          <div class="chart-canvas-wrap sm"><canvas id="latencyChart"></canvas></div>
+        </article>
+
+        <article class="panel" data-panel-id="alerts-map" data-panel-title="Active Alerts Map">
+          <header class="panel-head">
+            <div class="panel-title-wrap">
+              <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+              <h2 class="panel-title">ACTIVE ALERTS MAP</h2>
+            </div>
+          </header>
+          <div class="map-wrap"><canvas id="alertMap"></canvas></div>
+          <div class="map-legend">
+            <span class="legend-label">Global Incidents:</span>
+            <span class="count-chip" id="incidentCount">0</span>
+            <ul class="map-key">
+              <li><span class="status-dot fatal"></span>Fatal</li>
+              <li><span class="status-dot critical"></span>Critical</li>
+              <li><span class="status-dot warning"></span>Warning</li>
+              <li><span class="status-dot ok"></span>Healthy</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel" data-panel-id="docker" data-panel-title="Docker Container Health">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <h2 class="panel-title">DOCKER CONTAINER HEALTH</h2>
+          </div>
+        </header>
+        <div class="docker-grid" id="dockerGrid"></div>
+      </article>
+
+    </section>
+
+    <!-- ============ COLUNA DIREITA ============ -->
+    <section class="col col-right">
+
+      <article class="panel" data-panel-id="critical-alerts" data-panel-title="Recent Critical Alerts">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <h2 class="panel-title">RECENT CRITICAL ALERTS</h2>
+          </div>
+        </header>
+        <ul class="alert-list" id="alertList"></ul>
+      </article>
+
+      <article class="panel" id="logs" data-panel-id="logs" data-panel-title="Recent Log Entries">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <h2 class="panel-title">RECENT LOG ENTRIES (ALL)</h2>
+          </div>
+        </header>
+        <div class="panel-toolbar logs-toolbar">
+          <div class="pill-group" id="logFilters">
+            <button class="pill is-active" data-level="ERROR" type="button"><span class="status-dot error"></span>ERROR</button>
+            <button class="pill is-active" data-level="INFO" type="button"><span class="status-dot info"></span>INFO</button>
+            <button class="pill is-active" data-level="DEBUG" type="button"><span class="status-dot debug"></span>DEBUG</button>
+          </div>
+          <label class="search-box" for="logSearch">
+            <span class="ico">⌕</span>
+            <input id="logSearch" type="search" placeholder="Keyword search" autocomplete="off" />
+          </label>
+        </div>
+        <div class="log-console" id="logConsole" tabindex="0"></div>
+      </article>
+
+      <article class="panel" data-panel-id="network" data-panel-title="Network Traffic">
+        <header class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="drag-handle" title="Arraste para reordenar">⠿</span>
+            <h2 class="panel-title">NETWORK TRAFFIC (IN/OUT)</h2>
+          </div>
+          <div class="legend" id="netLegend"></div>
+        </header>
+        <div class="chart-canvas-wrap sm"><canvas id="netChart"></canvas></div>
+        <div class="net-foot">
+          <span>Total IN <strong id="netInTotal">0</strong></span>
+          <span>Total OUT <strong id="netOutTotal">0</strong></span>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip" aria-hidden="true"></div>
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

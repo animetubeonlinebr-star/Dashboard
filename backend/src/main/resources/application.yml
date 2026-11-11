@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: devops-status-board
+  jackson:
+    default-property-inclusion: non_null
+
+board:
+  stream:
+    # Intervalo, em milissegundos, entre os ticks enviados pelo WebSocket.
+    interval-ms: 2500
+
+logging:
+  level:
+    com.devops.board: INFO

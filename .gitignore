@@ -1,0 +1,30 @@
+# Build
+target/
+dist/
+build/
+*.jar
+*.war
+
+# Dependências
+node_modules/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Sistema / temporários
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.agent_tmp/
+
+# Ambiente
+.env
+.env.local
